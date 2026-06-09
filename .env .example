@@ -4,7 +4,3 @@ POSTGRES_PASSWORD=dragontap
 
 SPRING_DATASOURCE_URL=jdbc:postgresql://cellar:5432/dragontap
 SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
-
-INNKEEPER_PORT=4181
-
-VITE_API_URL=/api

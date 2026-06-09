@@ -10,6 +10,11 @@ services:
     volumes:
       - dragon_tap_data:/var/lib/postgresql/data
       - ./cellar/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   innkeeper-java:
     build: ./innkeeper-java
@@ -22,22 +27,21 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_JPA_DATABASE_PLATFORM:  ${SPRING_JPA_DATABASE_PLATFORM}
     depends_on:
-      - cellar
+      cellar:
+        condition: service_healthy
 
   board-react:
     build:
       context: ./board-react
-      args:
-        VITE_API_URL: ${VITE_API_URL}
     networks:
       - dragon_tap
 
-  nginx:
+  gatekeeper:
     image: nginx:alpine
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./gatekeeper/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - innkeeper-java
       - board-react
