@@ -1,6 +1,7 @@
 services:
   cellar:
     image: postgres:16-alpine
+    restart: unless-stopped
     networks:
       - dragon_tap
     environment:
@@ -18,6 +19,7 @@ services:
 
   innkeeper-java:
     build: ./innkeeper-java
+    restart: unless-stopped
     networks:
       - dragon_tap
     environment:
@@ -33,11 +35,13 @@ services:
   board-react:
     build:
       context: ./board-react
+    restart: unless-stopped
     networks:
       - dragon_tap
 
   gatekeeper:
     image: nginx:alpine
+    restart: unless-stopped
     ports:
       - "80:80"
     volumes:
