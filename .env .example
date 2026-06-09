@@ -2,9 +2,9 @@ POSTGRES_DB=dragontap
 POSTGRES_USER=dragontap
 POSTGRES_PASSWORD=dragontap
 
-DATABASE_URL=postgres://dragontap:dragontap@cellar:5432/dragontap
-
 SPRING_DATASOURCE_URL=jdbc:postgresql://cellar:5432/dragontap
 SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
 
-VITE_API_URL=http://localhost:4185
+INNKEEPER_PORT=4181
+
+VITE_API_URL=/api
