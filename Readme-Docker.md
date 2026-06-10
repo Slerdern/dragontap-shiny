@@ -1,27 +1,48 @@
-Groupe de Matteo et Gweltaz
+# Projet Docker — Matteo & Gweltaz
 
-Stack choisies : 
+## Stack technique
 
-Back : innkeeper-java
+| Couche    | Technologie      |
+|-----------|------------------|
+| Backend   | `innkeeper-java` |
+| Frontend  | `board-react`    |
+ 
+---
+## Initialisation du projet
 
-Front : board-react
+### Option 1 — Script automatique *(recommandé)*
 
-Restart policies : Nous avons choisi d'utiliser les restarts policies "unless stopped" pour nos conteneurs, ce qui signifie que les conteneurs redémarreront automatiquement en cas de plantage ou d'arrêt inattendu, sauf si nous les arrêtons manuellement. Cela garantit une meilleure résilience de notre application et minimise les temps d'arrêt.
+```bash
+bash setup.bash
+```
 
-Healtchecks : Nous avons implemente un healthcheck pour notre conteneur de base de données PostgreSQL. Le healthcheck utilise la commande "pg_isready" pour vérifier si la base de données est prête à accepter des connexions. Si le healthcheck échoue, Docker considérera le conteneur comme non sain et pourra prendre des mesures en conséquence, comme redémarrer le conteneur ou alerter les administrateurs.
+### Option 2 — Démarrage manuel
 
-Pour initialiser le projet : 
+1. Renommer les fichiers `.env.example` en `.env`
+2. Lancer les conteneurs :
+```bash
+docker compose up -d --build
+```
+---
 
-Solution 1: 
+## Configuration Docker
 
-1- Renommer les .env.example en .env
-2- Ouvrir un terminal et lancer la commande suivante : docker compose up
+### Restart policies
 
-Solution 2:
+La politique `unless-stopped` est appliquée sur l'ensemble des conteneurs: Tout conteneur arrêté de manière inattendue redémarre automatiquement, seul un arrêt manuel y fait exception. Cette configuration assure la continuité de service sans intervention humaine.
 
-Lancer un terminal bash et executer le script setup.bash (permets de remplacer les .env)
+### Healthchecks
 
-Fonctionnement du projet :
+Le conteneur **PostgreSQL** est surveillé via la commande `pg_isready`, qui sonde en continu la disponibilité de la base de données. Tant que celle-ci ne répond pas correctement, Docker considère le conteneur comme *unhealthy* et bloque les dépendants jusqu'au rétablissement complet.
 
-Nos difficultes : 
+---
 
+## Difficultés rencontrées
+
+#### Dockerfile Java
+
+- **Build préalable requis** : penser à compiler le projet avant de construire l'image, afin que le répertoire `target/` existe.
+- **Gestion des permissions** : ne pas oublier d'ajouter la commande `addGroup` dans le Dockerfile pour la création du groupe utilisateur.
+#### Configuration Nginx
+
+- **Ne pas ajouter de `/` après `proxy_pass http://innkeeper`** — cela provoque une réécriture du chemin et génère une duplication : `/api/` devient `/api/api/`.
